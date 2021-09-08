@@ -1,0 +1,46 @@
+# grpc service configuration.
+grpc:
+  listen: tcp://0.0.0.0:50051
+  proto: "proto/calculator.proto"
+  workers.command: "php app.php"
+  tls.key:  "localhost.key"
+  tls.cert: "localhost.crt"
+
+metrics:
+    address: 0.0.0.0:2112
+
+# queue and jobs
+jobs:
+  dispatch:
+    app-job-*.pipeline: "local"
+  pipelines:
+    local:
+      broker: "ephemeral"
+  consume: ["local"]
+
+  workers:
+    command: "php app.php"
+    pool:
+        numWorkers: 2
+        maxJobs: 2
+
+# control the max memory usage
+limit:
+    # check worker state each second
+    interval: 1
+
+    # custom watch configuration for each service
+    services:
+        # monitor http workers
+        grpc:
+            # maximum allowed memory consumption per worker (soft)
+            maxMemory: 100
+
+            # maximum time to live for the worker (soft)
+            TTL: 0
+
+            # maximum allowed amount of time worker can spend in idle before being removed (for weak db connections, soft)
+            idleTTL: 0
+
+            # max_execution_time (brutal)
+            execTTL: 60

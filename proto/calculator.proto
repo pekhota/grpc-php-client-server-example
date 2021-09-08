@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+option php_namespace = "App\\Calculator";
+option php_metadata_namespace = "App\\GPBMetadata";
+option go_package = "./;proto";
+
+package app;
+
+enum Operation {
+    ADD         = 0;
+    SUBTRACT    = 1;
+    MULTIPLY    = 2;
+    DIVIDE      = 3;
+}
+
+message Work {
+    string logid = 1;
+    int32 num1 = 2;
+    int32 num2 = 3;
+    Operation op = 4;
+    string comment = 5;
+}
+
+message Add {
+    int32 num1 = 1;
+    int32 num2 = 2;
+}
+
+message PingRequest {
+
+}
+
+message PingResponse {
+
+}
+
+message ZipRequest {
+
+}
+
+message ZipResponse {
+
+}
+
+message Result {
+    float result = 1;
+    bool error = 2; // protobuf doesn't support exceptions
+    string error_message = 3;
+}
+
+// https://stackoverflow.com/questions/41243168/inheritance-in-protocol-buffers
+service Calculator {
+    rpc Add (app.Add) returns (app.Result) {} // you can pass only message into method and have a message as a response
+    rpc Calculate (app.Work) returns (app.Result) {}
+    rpc Ping (app.PingRequest) returns (app.PingResponse) {}
+    rpc Zip(app.ZipRequest) returns (app.ZipResponse) {}
+}
